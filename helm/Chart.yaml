@@ -1,0 +1,6 @@
+apiVersion: v2
+name: srt-live-server
+description: SRT Live Server mit SRTLA-Unterstützung für Kubernetes
+type: application
+version: 0.1.0
+appVersion: "latest"

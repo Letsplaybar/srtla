@@ -1,0 +1,13 @@
+# helm/templates/service-http.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-http
+spec:
+  type: {{ .Values.httpService.type }}
+  ports:
+    - port: {{ .Values.httpService.port }}
+      targetPort: {{ .Values.config.httpPort }}
+      protocol: TCP
+  selector:
+    app: {{ .Chart.Name }}

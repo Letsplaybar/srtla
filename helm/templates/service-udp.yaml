@@ -1,0 +1,17 @@
+# helm/templates/service-udp.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-udp
+  annotations: {{- toYaml .Values.udpService.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.udpService.type }}
+  ports:
+    {{- range .Values.udpService.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: {{ .protocol }}
+    {{- end }}
+  selector:
+    app: {{ .Chart.Name }}

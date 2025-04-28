@@ -1,0 +1,48 @@
+# helm/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name | default (include "srt-live-server.serviceAccountName" .) }}
+      securityContext: {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.config.httpPort }}
+              protocol: TCP
+            - name: srt
+              containerPort: {{ .Values.config.srtPort }}
+              protocol: UDP
+            - name: srtla
+              containerPort: {{ .Values.config.srtlaPort }}
+              protocol: UDP
+          env:
+            - name: SLS_HTTP_PORT
+              value: "{{ .Values.config.httpPort }}"
+            - name: SLS_SRT_PORT
+              value: "{{ .Values.config.srtPort }}"
+            - name: SLS_LATENCY
+              value: "{{ .Values.config.latency }}"
+            - name: SLS_DOMAIN_PLAYER
+              value: "{{ .Values.config.domainPlayer }}"
+            - name: SLS_DOMAIN_PUBLISHER
+              value: "{{ .Values.config.domainPublisher }}"
+            - name: SLS_RECORD_HLS
+              value: "{{ .Values.config.recordHls }}"
+            - name: SLS_RECORD_HLS_PATH
+              value: "{{ .Values.config.recordHlsPath }}"
