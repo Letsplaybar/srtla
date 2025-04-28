@@ -18,12 +18,16 @@ jobs:
       - name: Repository auschecken
         uses: actions/checkout@v3
         with:
-          submodules: recursive  # Rekursives Update der Submodule
-          fetch-depth: 0         # Vollständiger Verlauf für Submodule
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Datum als Tag extrahieren
         id: date
         run: echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+      - name: Repository-Namen in Kleinbuchstaben umwandeln
+        id: repo-name
+        run: echo "repo=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Bei GitHub Container Registry anmelden
         uses: docker/login-action@v2
@@ -41,7 +45,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/srt-live-server:latest
-            ghcr.io/${{ github.repository_owner }}/srt-live-server:${{ steps.date.outputs.date }}
+            ghcr.io/${{ steps.repo-name.outputs.repo }}/srt-live-server:latest
+            ghcr.io/${{ steps.repo-name.outputs.repo }}/srt-live-server:${{ steps.date.outputs.date }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
