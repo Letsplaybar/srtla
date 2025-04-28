@@ -34,7 +34,7 @@ jobs:
       - name: AppVersion im Chart aktualisieren
         run: |
           sed -i "s/appVersion:.*/appVersion: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml && \
-            sed -i "s/version:.*/version: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml
+          sed -i "s/version:.*/version: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml
 
       - name: Bei GitHub Container Registry anmelden
         run: |
@@ -44,10 +44,10 @@ jobs:
         run: |
           # Chart-Namen aus Chart.yaml extrahieren
           CHART_NAME=$(grep '^name:' helm/Chart.yaml | awk '{print $2}')
-          CHART_VERSION=$(grep '^version:' helm/Chart.yaml | awk '{print $2}')
-          
+          CHART_VERSION=$(grep '^version:' helm/Chart.yaml | awk '{print $2}' | tr -d '"')
+
           # Chart packen
           helm package ./helm
-          
+
           # Chart in die GitHub Container Registry pushen
           helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${{ steps.repo-name.outputs.repo }}/chart
