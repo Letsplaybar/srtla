@@ -21,7 +21,7 @@ docker run -d \
   -v /path/to/recordings:/tmp/mov/sls \
   -e SLS_RECORD_HLS=on \
   --name srt-live-server \
-  srt-live-server:latest
+  ghcr.io/letsplaybar/srt-live-server:latest
 ```
 
 ## Konfiguration
