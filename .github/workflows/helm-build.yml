@@ -33,7 +33,8 @@ jobs:
 
       - name: AppVersion im Chart aktualisieren
         run: |
-          sed -i "s/appVersion:.*/appVersion: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml
+          sed -i "s/appVersion:.*/appVersion: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml && \
+            sed -i "s/version:.*/version: \"${{ steps.date.outputs.date }}\"/" helm/Chart.yaml
 
       - name: Bei GitHub Container Registry anmelden
         run: |
