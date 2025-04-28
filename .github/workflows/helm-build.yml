@@ -50,4 +50,4 @@ jobs:
           helm package ./helm
           
           # Chart in die GitHub Container Registry pushen
-          helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${{ steps.repo-name.outputs.repo }}/chart/srt-live-server
+          helm push ${CHART_NAME}-${CHART_VERSION}.tgz oci://ghcr.io/${{ steps.repo-name.outputs.repo }}/chart

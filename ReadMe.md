@@ -1,17 +1,16 @@
-# SRT Live Server mit SRTLA-Unterstützung
+# SRT Live Server with SRTLA Support
 
-Dieser Container bietet einen SRT (Secure Reliable Transport) Live-Server mit SRTLA-Unterstützung für zuverlässiges Streaming über unzuverlässige Netzwerke.
+This container provides an SRT (Secure Reliable Transport) Live Server with SRTLA support for reliable streaming over unreliable networks.
 
-## Funktionen
+## Features
 
-- SRT-Protokoll für latenzarmes Streaming
-- SRTLA-Support für Verbindungsbündelung über mehrere Netzwerkpfade
-- HTTP-API für Statistiken und Monitoring
-- HLS-Recording-Funktionalität
-- VOD (Video-on-Demand) Zugriff auf aufgezeichnete Streams
-- Konfigurierbar über Umgebungsvariablen
+- SRT protocol for low-latency streaming
+- SRTLA support for connection bundling across multiple network paths
+- HTTP API for statistics and monitoring
+- HLS recording functionality
+- Configurable via environment variables
 
-## Schnellstart
+## Quick Start
 
 ```bash
 docker run -d \
@@ -24,23 +23,71 @@ docker run -d \
   ghcr.io/letsplaybar/srt-live-server:latest
 ```
 
-## Konfiguration
+## Configuration
 
-Der Server wird über Umgebungsvariablen konfiguriert:
+The server is configured using environment variables:
 
-| Variable | Standard | Beschreibung |
+| Variable | Default | Description |
 |----------|---------|-------------|
-| SLS_HTTP_PORT | 8181 | HTTP-Server-Port für API und VOD |
-| SLS_SRT_PORT | 8080 | SRT-Server-Port |
-| SLS_LATENCY | 20 | Latenz in ms |
-| SLS_DOMAIN_PLAYER | live.sls | Domain für Player |
-| SLS_DOMAIN_PUBLISHER | uplive.sls | Domain für Publisher |
-| SLS_RECORD_HLS | off | HLS-Aufzeichnung aktivieren (on/off) |
-| SLS_RECORD_HLS_PATH | /tmp/mov/sls | Pfad für HLS-Aufzeichnungen |
-| SRTLA_PORT | 5000 | SRTLA-Port für Verbindungsbündelung |
+| SLS_HTTP_PORT | 8181 | HTTP server port for API and VOD |
+| SLS_SRT_PORT | 8080 | SRT server port |
+| SLS_LATENCY | 20 | Latency in ms |
+| SLS_DOMAIN_PLAYER | live.sls | Domain for player |
+| SLS_DOMAIN_PUBLISHER | uplive.sls | Domain for publisher |
+| SLS_RECORD_HLS | off | Enable HLS recording (on/off) |
+| SLS_RECORD_HLS_PATH | /tmp/mov/sls | Path for HLS recordings |
+| SRTLA_PORT | 5000 | SRTLA port for connection bundling |
 
-## Docker-Volumes
+## Docker Volumes
 
-Es wird empfohlen, folgende Volumes zu mounten:
-- `/logs`: Für Server-Logs
-- `/tmp/mov/sls`: Für HLS-Aufzeichnungen
+It's recommended to mount the following volumes:
+- `/logs`: For server logs
+- `/tmp/mov/sls`: For HLS recordings
+
+## Kubernetes Deployment with Helm
+
+### Prerequisites
+
+- Kubernetes cluster
+- Helm v3+
+- cert-manager (for TLS/HTTPS)
+
+### Installation
+
+```bash
+# Pull the Helm chart from GitHub Container Registry
+helm install srt-server oci://ghcr.io/letsplaybar/chart/srt-live-server --version <version> -f my-values.yaml
+```
+
+### Helm Configuration
+
+Key configuration parameters in `values.yaml`:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `replicaCount` | Number of server replicas | `1` |
+| `image.repository` | Docker image repository | `ghcr.io/letsplaybar/srt-live-server` |
+| `image.tag` | Docker image tag | `latest` |
+| `udpService.type` | Service type for UDP ports | `LoadBalancer` |
+| `ingress.enabled` | Enable ingress for HTTP | `true` |
+| `ingress.hosts` | Hostnames for ingress | `["example.com"]` |
+
+### Networking
+
+- **UDP Service**: Exposes SRT (8080/UDP) and SRTLA (5000/UDP) ports
+- **HTTP Service**: Internal service for the HTTP interface
+- **Ingress**: HTTP/HTTPS access with TLS support
+
+### TLS/HTTPS Configuration
+
+The Helm chart supports automatic TLS certificate management via cert-manager. Configure it in your `values.yaml`:
+
+```yaml
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-cluster-issuer"
+  tls:
+    - secretName: srt-live-server-tls
+      hosts:
+        - "your-domain.com"
+```
