@@ -1,0 +1,6 @@
+[submodule "irl-srt-server"]
+	path = irl-srt-server
+	url = https://github.com/irlserver/irl-srt-server.git
+[submodule "strla"]
+	path = strla
+	url = https://github.com/irlserver/srtla.git
